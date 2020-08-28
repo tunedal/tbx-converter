@@ -6,6 +6,7 @@ interface XmlParser {
         ) : Event()
         data class TagEnd(val name: String) : Event()
         data class Text(val contents: String) : Event()
+        object DocumentEnd : Event()
     }
 
     fun parse(xml: String): Sequence<Event>

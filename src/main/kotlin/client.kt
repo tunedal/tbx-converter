@@ -3,11 +3,17 @@ import kotlinx.html.dom.append
 import org.w3c.dom.Node
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.dom.isElement
 import kotlinx.dom.isText
+import kotlinx.html.InputType
+import kotlinx.html.id
+import kotlinx.html.input
+import kotlinx.html.js.onChangeFunction
 import org.w3c.dom.Element
 import org.w3c.dom.asList
+import org.w3c.dom.events.Event
 import org.w3c.dom.parsing.DOMParser
+import org.w3c.files.File
+import org.w3c.files.FileReader
 
 class XmlParser(val domParser: DOMParser) {
     sealed class Event {
@@ -51,9 +57,50 @@ fun main() {
 
     window.onload = {
         document.body?.sayHello()
-        for (node in parser.parse(xml)) {
-            document.body?.showText(node.toString())
+
+        fun parse(data: String) {
+            for (node in parser.parse(data)) {
+                document.body?.showText(node.toString())
+            }
         }
+
+        fun print(text: Any?) = document.body?.showText(text.toString())
+
+        document.body?.createFileInput { file ->
+            val reader = FileReader()
+            reader.readAsText(file)
+            reader.onload = fun(event: Event) {
+                print("Loaded!")
+                val data = reader.result as String
+
+                val nodes = parser.parse(data).iterator()
+                var count = 0
+                val statusElement = document.getElementById("status")
+
+                fun process() {
+                    if (!nodes.hasNext())
+                        return
+
+                    count++
+                    nodes.next()
+                    statusElement?.textContent = count.toString()
+
+                    window.requestAnimationFrame {
+                        process()
+                    }
+                }
+
+                process()
+
+//                for (node in parser.parse(data)) {
+//                    count++
+//                }
+//                print("Parsed $count nodes.")
+            }
+//            window.alert("Got file: $file")
+        }
+
+        parse(xml)
     }
 }
 
@@ -65,9 +112,21 @@ fun Node.showText(text: String?) {
     }
 }
 
+fun Node.createFileInput(callback: (File) -> Unit) {
+    append {
+        input(InputType.file) {
+            onChangeFunction = { event ->
+                val fileInput = event.target.asDynamic()
+                callback(fileInput.files[0])
+            }
+        }
+    }
+}
+
 fun Node.sayHello() {
     append {
         div {
+            id = "status"
             +"Hello from JS"
         }
     }

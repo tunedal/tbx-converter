@@ -127,7 +127,7 @@ fun Node.sayHello() {
     append {
         div {
             id = "status"
-            +"Hello from JS"
+            +hello()
         }
     }
 }

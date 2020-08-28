@@ -1,6 +1,4 @@
 import XmlParser.Event.*
-import java.util.concurrent.Executors
-import javax.xml.parsers.SAXParserFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -17,14 +15,5 @@ class ParserTest {
         assertEquals(expected, events)
     }
 
-    private fun parse(xml: String): Sequence<XmlParser.Event> {
-        val saxFactory = SAXParserFactory.newDefaultInstance()
-        val executor = Executors.newSingleThreadExecutor()
-        val parser: XmlParser = SaxXmlParser(saxFactory, executor)
-        return try {
-            parser.parse(xml)
-        } finally {
-            executor.shutdown()
-        }
-    }
+    private fun parse(xml: String) = createParser().use { it.parse(xml) }
 }

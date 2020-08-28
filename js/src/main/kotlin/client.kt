@@ -15,17 +15,8 @@ import org.w3c.dom.parsing.DOMParser
 import org.w3c.files.File
 import org.w3c.files.FileReader
 
-class XmlParser(val domParser: DOMParser) {
-    sealed class Event {
-        data class TagStart(
-            val name: String,
-            val attributes: Map<String, String>
-        ) : Event()
-        data class TagEnd(val name: String) : Event()
-        data class Text(val contents: String) : Event()
-    }
-
-    fun parse(xml: String): Sequence<Event> {
+class DomXmlParser(val domParser: DOMParser) : XmlParser {
+    override fun parse(xml: String): Sequence<XmlParser.Event> {
         val doc = domParser.parseFromString(xml, "application/xml")
         return when (val root = doc.firstChild) {
             null -> emptySequence()
@@ -33,26 +24,26 @@ class XmlParser(val domParser: DOMParser) {
         }
     }
 
-    fun parse(node: Node): Sequence<Event> = sequence {
+    private fun parse(node: Node): Sequence<XmlParser.Event> = sequence {
         if (node.isText) {
-            yield(Event.Text(node.textContent ?: ""))
+            yield(XmlParser.Event.Text(node.textContent ?: ""))
         }
         else {
             val element = node as Element
             val attributes = element.attributes.asList()
                 .map { it.name to it.value }
                 .toMap()
-            yield(Event.TagStart(node.nodeName, attributes))
+            yield(XmlParser.Event.TagStart(node.nodeName, attributes))
             for (child in node.childNodes.asList()) {
                 yieldAll(parse(child))
             }
-            yield(Event.TagEnd(node.nodeName))
+            yield(XmlParser.Event.TagEnd(node.nodeName))
         }
     }
 }
 
 fun main() {
-    val parser = XmlParser(DOMParser())
+    val parser = DomXmlParser(DOMParser())
     val xml = "<roten><ett ichi=\"1\">Hej</ett><två>Hopp</två></roten>"
 
     window.onload = {

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mtf>
+  <conceptGrp>
+    <concept alternativeId="">1</concept>
+    <transacGrp>
+      <transac type="origination">super</transac>
+      <date>2000-09-13T03:25:46</date>
+    </transacGrp>
+    <transacGrp>
+      <transac type="modification">super</transac>
+      <date>2000-09-13T03:25:46</date>
+    </transacGrp>
+    <languageGrp>
+      <language type="swedish" lang="SV-SE"/>
+      <termGrp>
+        <term>Swedish term one</term>
+        <transacGrp>
+          <transac type="origination">local</transac>
+          <date>2007-01-19T13:04:29</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">local</transac>
+          <date>2007-01-19T13:04:29</date>
+        </transacGrp>
+      </termGrp>
+      <termGrp>
+        <term>synonym for Swedish term one</term>
+        <transacGrp>
+          <transac type="origination">local</transac>
+          <date>2007-01-19T13:04:29</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">local</transac>
+          <date>2007-01-19T13:04:29</date>
+        </transacGrp>
+      </termGrp>
+    </languageGrp>
+    <languageGrp>
+      <language type="english" lang="EN-GB"/>
+      <termGrp>
+        <term>term one in English</term>
+        <transacGrp>
+          <transac type="origination">local</transac>
+          <date>2007-01-19T13:04:29</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">local</transac>
+          <date>2007-01-19T13:04:29</date>
+        </transacGrp>
+      </termGrp>
+    </languageGrp>
+  </conceptGrp>
+  <conceptGrp>
+    <concept alternativeId="">60</concept>
+    <transacGrp>
+      <transac type="origination">super</transac>
+      <date>2000-09-13T03:25:47</date>
+    </transacGrp>
+    <transacGrp>
+      <transac type="modification">super</transac>
+      <date>2001-01-24T01:44:12</date>
+    </transacGrp>
+    <languageGrp>
+      <language type="swedish" lang="SV-SE"/>
+      <termGrp>
+        <term>term 60 in Swedish</term>
+        <transacGrp>
+          <transac type="origination">local</transac>
+          <date>2007-01-19T13:04:35</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">local</transac>
+          <date>2007-01-19T13:04:35</date>
+        </transacGrp>
+      </termGrp>
+    </languageGrp>
+    <languageGrp>
+      <language type="english" lang="EN-GB"/>
+      <termGrp>
+        <term>term 60 in English</term>
+        <descripGrp>
+          <descrip type="Kommentar">comment for term 60</descrip>
+        </descripGrp>
+        <transacGrp>
+          <transac type="origination">local</transac>
+          <date>2007-01-19T13:04:35</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">local</transac>
+          <date>2007-01-19T13:04:35</date>
+        </transacGrp>
+      </termGrp>
+    </languageGrp>
+  </conceptGrp>
+  <conceptGrp>
+    <concept>3000</concept>
+    <languageGrp>
+      <language type="english" lang="EN-GB"/>
+      <termGrp>
+        <term>term 3000 in English</term>
+        <transacGrp>
+          <transac type="origination">Example User</transac>
+          <date>2020-08-22T18:47:42</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">Example User</transac>
+          <date>2020-08-22T18:47:42</date>
+        </transacGrp>
+      </termGrp>
+      <termGrp>
+        <term>synonym for term 3000 in English</term>
+        <transacGrp>
+          <transac type="origination">Example User</transac>
+          <date>2020-08-22T18:47:42</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">Example User</transac>
+          <date>2020-08-22T18:47:42</date>
+        </transacGrp>
+      </termGrp>
+    </languageGrp>
+    <languageGrp>
+      <language type="swedish" lang="SV-SE"/>
+      <termGrp>
+        <term>term 3000 in Swedish</term>
+        <transacGrp>
+          <transac type="origination">Example User</transac>
+          <date>2020-08-22T18:47:42</date>
+        </transacGrp>
+        <transacGrp>
+          <transac type="modification">Example User</transac>
+          <date>2020-08-22T18:47:42</date>
+        </transacGrp>
+      </termGrp>
+    </languageGrp>
+    <transacGrp>
+      <transac type="origination">Example User</transac>
+      <date>2020-08-22T18:47:42</date>
+    </transacGrp>
+    <transacGrp>
+      <transac type="modification">Example User</transac>
+      <date>2020-08-22T18:47:42</date>
+    </transacGrp>
+  </conceptGrp>
+</mtf>

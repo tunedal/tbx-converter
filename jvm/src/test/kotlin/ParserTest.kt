@@ -7,8 +7,8 @@ class ParserTest {
     fun `parses start and end tags`() {
         val events = parse("<one><two></two></one>").toList()
         val expected = listOf(
-            TagStart("one", emptyMap()),
-            TagStart("two", emptyMap()),
+            TagStart("one"),
+            TagStart("two"),
             TagEnd("two"),
             TagEnd("one"),
         )
@@ -24,5 +24,21 @@ class ParserTest {
         )
         assertEquals(expected, events)
     }
+
+    @Test
+    fun `parses text content`() {
+        val events = parse("<p>Greetings and <i>salutations</i>!</p>").toList()
+        val expected = listOf(
+            TagStart("p"),
+            Text("Greetings and "),
+            TagStart("i"),
+            Text("salutations"),
+            TagEnd("i"),
+            Text("!"),
+            TagEnd("p"),
+        )
+        assertEquals(expected, events)
+    }
+
     private fun parse(xml: String) = createParser().use { it.parse(xml) }
 }

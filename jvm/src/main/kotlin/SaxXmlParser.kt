@@ -63,5 +63,10 @@ class SaxXmlParser(
         ) {
             push(TagEnd(qName))
         }
+
+        override fun characters(ch: CharArray, start: Int, length: Int) {
+            val textData = ch.concatToString(start, start + length)
+            push(Text(textData))
+        }
     }
 }

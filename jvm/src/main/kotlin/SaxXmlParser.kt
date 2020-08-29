@@ -48,9 +48,12 @@ class SaxXmlParser(
             uri: String?,
             localName: String?,
             qName: String,
-            attributes: Attributes?
+            attributes: Attributes
         ) {
-            push(TagStart(qName, emptyMap()))
+            val attrMap = (0 until attributes.length)
+                .map { i -> attributes.getQName(i) to attributes.getValue(i) }
+                .toMap()
+            push(TagStart(qName, attrMap))
         }
 
         override fun endElement(

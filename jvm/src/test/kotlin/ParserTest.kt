@@ -15,5 +15,14 @@ class ParserTest {
         assertEquals(expected, events)
     }
 
+    @Test
+    fun `parses attributes`() {
+        val events = parse("<e one=\"yi\" two=\"er\"></e>").toList()
+        val expected = listOf(
+            TagStart("e", mapOf("one" to "yi", "two" to "er")),
+            TagEnd("e"),
+        )
+        assertEquals(expected, events)
+    }
     private fun parse(xml: String) = createParser().use { it.parse(xml) }
 }

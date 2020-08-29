@@ -3,9 +3,22 @@ package readers
 import XmlParser
 import XmlParser.Event.*
 
-data class Concept(val id: Int)
+data class Concept(val id: Int, val transactions: List<Transaction>)
 
-data class Transaction(val type: String, val date: String)
+sealed class Transaction {
+    abstract val author: String
+    abstract val date: String
+
+    data class Origination(
+        override val author: String,
+        override val date: String,
+    ) : Transaction()
+
+    data class Modification(
+        override val author: String,
+        override val date: String,
+    ) : Transaction()
+}
 
 class SdlTradosReader(private val parser: XmlParser) {
     // TODO: Maybe look into using streams from kotlinx-io.
@@ -13,30 +26,66 @@ class SdlTradosReader(private val parser: XmlParser) {
     fun read(data: String): Sequence<Concept> = sequence {
         val parseEvents = parser.parse(data).iterator()
 
-        fun readConcept(tag: TagStart): Int {
+        fun readTextContent(tag: TagStart): String {
             val buf = mutableListOf<String>()
             for (event in parseEvents.readUntilEndTag(tag.name)) {
                 if (event !is Text)
                     error("Expected text content: $event")
                 buf += event.contents
             }
-            val text = buf.joinToString("")
-            return text.toInt()
+            return buf.joinToString("")
+        }
+
+        fun readTransacGrp(tag: TagStart): Transaction {
+            lateinit var transactionType: String
+            lateinit var author: String
+            lateinit var date: String
+            for (event in parseEvents.readUntilEndTag(tag.name).nonBlanks()) {
+                when ((event as TagStart).name) {
+                    "transac" -> {
+                        transactionType = event.attributes["type"]
+                            ?: error("Missing transaction type")
+                        author = readTextContent(event)
+                    }
+                    "date" -> {
+                        date = readTextContent(event)
+                    }
+                    else -> error("Unexpected transaction element: $event")
+                }
+            }
+            return when (transactionType) {
+                "origination" -> Transaction.Origination(author, date)
+                "modification" -> Transaction.Modification(author, date)
+                else -> error("Unexpected transaction type: $transactionType")
+            }
         }
 
         fun readConceptGrp(tag: TagStart): Concept {
             var id: Int? = null
+            val transactions = mutableListOf<Transaction>()
             for (event in parseEvents.readUntilEndTag(tag.name)) {
                 when (event) {
                     is TagStart -> {
                         if (event.name == "concept") {
-                            id = readConcept(event)
+                            id = readTextContent(event).toInt()
+                        }
+                        else if (event.name == "languageGrp") {
+                            parseEvents.readUntilEndTag(event.name).consume()
+                        }
+                        else if (event.name == "transacGrp") {
+                            transactions += readTransacGrp(event)
+                        }
+                        else {
+                            error("Unexpected element: $event")
                         }
                     }
                     else -> Unit
                 }
             }
-            return Concept(id ?: error("Missing concept ID"))
+            return Concept(
+                id ?: error("Missing concept ID"),
+                transactions,
+            )
         }
 
         fun readMtf(tag: TagStart): Sequence<Concept> = sequence {
@@ -102,5 +151,13 @@ class SdlTradosReader(private val parser: XmlParser) {
             val event = readNonBlank() ?: break
             yield(event)
         }
+    }
+
+    private fun Sequence<XmlParser.Event>.nonBlanks() = iterator().nonBlanks()
+
+    private fun <T> Sequence<T>.consume() {
+        val iterator = this.iterator()
+        while (iterator.hasNext())
+            iterator.next()
     }
 }

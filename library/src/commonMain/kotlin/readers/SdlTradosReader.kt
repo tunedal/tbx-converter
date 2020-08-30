@@ -183,24 +183,6 @@ class SdlTradosReader(private val parser: XmlParser) {
         yieldAll(read())
     }
 
-    private fun Iterator<XmlParser.Event>.readStartTag(tag: String): TagStart {
-        while (true) {
-            when (val event = next()) {
-                is TagStart -> {
-                    if (event.name == tag)
-                        return event
-                    else
-                        error("Expected $tag: $event")
-                }
-                is Text -> {
-                    if (event.contents.isNotBlank())
-                        error("Expected $tag: $event")
-                }
-                else -> error("Expected $tag: $event")
-            }
-        }
-    }
-
     private fun Iterator<XmlParser.Event>.readUntilEndTag(endTag: String) =
         generateSequence {
             when (val event = next()) {

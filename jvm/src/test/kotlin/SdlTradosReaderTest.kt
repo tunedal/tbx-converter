@@ -47,7 +47,7 @@ class SdlTradosReaderTest {
                         Term("term 60 in English", listOf(
                             Transaction.Origination("local", "2007-01-19T13:04:35"),
                             Transaction.Modification("local", "2007-01-19T13:04:35"),
-                        )),
+                        ), mapOf("Kommentar" to "comment for term 60")),
                     )),
                 ),
                 listOf(

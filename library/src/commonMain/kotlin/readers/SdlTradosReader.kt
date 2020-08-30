@@ -18,6 +18,7 @@ data class Language(
 data class Term(
     val value: String,
     val transactions: List<Transaction>,
+    val descrip: Map<String, String> = emptyMap(),
 )
 
 sealed class Transaction {
@@ -75,25 +76,37 @@ class SdlTradosReader(private val parser: XmlParser) {
             }
         }
 
+        fun readDescripGrp(tag: TagStart): Pair<String, String> {
+            lateinit var key: String
+            lateinit var value: String
+            for (event in parseEvents.readUntilEndTag(tag.name).nonBlanks()) {
+                when ((event as TagStart).name) {
+                    "descrip" -> {
+                        key = event.attributes["type"]
+                            ?: error("Missing descrip type attribute")
+                        value = readTextContent(event)
+                    }
+                    else -> error("Unexpected in descripGrp: $event")
+                }
+            }
+            return key to value
+        }
+
         fun readTermGrp(tag: TagStart): Term {
             lateinit var termValue: String
             val transactions = mutableListOf<Transaction>()
+            val descrip = mutableMapOf<String, String>()
             for (event in parseEvents.readUntilEndTag(tag.name).nonBlanks()) {
                 when ((event as TagStart).name) {
-                    "term" -> {
-                        termValue = readTextContent(event)
-                    }
-                    "transacGrp" -> {
-                        transactions += readTransacGrp(event)
-                    }
-                    "descripGrp" -> {
-                        // TODO
-                        parseEvents.readUntilEndTag(event.name).consume()
+                    "term" -> termValue = readTextContent(event)
+                    "transacGrp" -> transactions += readTransacGrp(event)
+                    "descripGrp" -> readDescripGrp(event).let {
+                        descrip[it.first] = it.second
                     }
                     else -> error("Unexpected transaction element: $event")
                 }
             }
-            return Term(termValue, transactions)
+            return Term(termValue, transactions, descrip)
         }
 
         fun readLanguageGrp(tag: TagStart): Language {

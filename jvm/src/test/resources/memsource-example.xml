@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<martif type="TBX">
+  <text>
+    <body>
+      <termEntry>
+        <descrip type="conceptId">testprefix-1</descrip>
+        <langSet xml:lang="SV-SE">
+          <tig>
+            <term>Swedish term one</term>
+            <termNote type="createdBy">local</termNote>
+            <termNote type="createdAt">1169211869000</termNote>
+            <termNote type="lastModifiedBy">local</termNote>
+            <termNote type="lastModifiedAt">1169211869000</termNote>
+          </tig>
+          <tig>
+            <term>synonym for Swedish term one</term>
+            <termNote type="createdBy">local</termNote>
+            <termNote type="createdAt">1169211869000</termNote>
+            <termNote type="lastModifiedBy">local</termNote>
+            <termNote type="lastModifiedAt">1169211869000</termNote>
+          </tig>
+        </langSet>
+        <langSet xml:lang="EN-GB">
+          <tig>
+            <term>term one in English</term>
+            <termNote type="createdBy">local</termNote>
+            <termNote type="createdAt">1169211869000</termNote>
+            <termNote type="lastModifiedBy">local</termNote>
+            <termNote type="lastModifiedAt">1169211869000</termNote>
+          </tig>
+        </langSet>
+      </termEntry>
+      <termEntry>
+        <descrip type="conceptId">testprefix-60</descrip>
+        <langSet xml:lang="SV-SE">
+          <tig>
+            <term>term 60 in Swedish</term>
+            <termNote type="createdBy">local</termNote>
+            <termNote type="createdAt">1169211875000</termNote>
+            <termNote type="lastModifiedBy">local</termNote>
+            <termNote type="lastModifiedAt">1169211875000</termNote>
+          </tig>
+        </langSet>
+        <langSet xml:lang="EN-GB">
+          <tig>
+            <term>term 60 in English</term>
+            <note>comment for term 60</note>
+            <termNote type="createdBy">local</termNote>
+            <termNote type="createdAt">1169211875000</termNote>
+            <termNote type="lastModifiedBy">local</termNote>
+            <termNote type="lastModifiedAt">1169211875000</termNote>
+          </tig>
+        </langSet>
+      </termEntry>
+      <termEntry>
+        <descrip type="conceptId">testprefix-3000</descrip>
+        <langSet xml:lang="EN-GB">
+          <tig>
+            <term>term 3000 in English</term>
+            <termNote type="createdBy">Example User</termNote>
+            <termNote type="createdAt">1598122062000</termNote>
+            <termNote type="lastModifiedBy">Example User</termNote>
+            <termNote type="lastModifiedAt">1598122062000</termNote>
+          </tig>
+          <tig>
+            <term>synonym for term 3000 in English</term>
+            <termNote type="createdBy">Example User</termNote>
+            <termNote type="createdAt">1598122062000</termNote>
+            <termNote type="lastModifiedBy">Example User</termNote>
+            <termNote type="lastModifiedAt">1598122062000</termNote>
+          </tig>
+        </langSet>
+        <langSet xml:lang="SV-SE">
+          <tig>
+            <term>term 3000 in Swedish</term>
+            <termNote type="createdBy">Example User</termNote>
+            <termNote type="createdAt">1598122062000</termNote>
+            <termNote type="lastModifiedBy">Example User</termNote>
+            <termNote type="lastModifiedAt">1598122062000</termNote>
+          </tig>
+        </langSet>
+      </termEntry>
+    </body>
+  </text>
+</martif>

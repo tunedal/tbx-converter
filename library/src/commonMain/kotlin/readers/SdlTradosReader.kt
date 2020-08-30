@@ -12,6 +12,12 @@ data class Concept(
 data class Language(
     val type: String,
     val lang: String,
+    val terms: List<Term>,
+)
+
+data class Term(
+    val value: String,
+    val transactions: List<Transaction>,
 )
 
 sealed class Transaction {
@@ -45,27 +51,6 @@ class SdlTradosReader(private val parser: XmlParser) {
             return buf.joinToString("")
         }
 
-        fun readLanguageGrp(tag: TagStart): Language {
-            lateinit var langType: String
-            lateinit var langCode: String
-            for (event in parseEvents.readUntilEndTag(tag.name).nonBlanks()) {
-                when ((event as TagStart).name) {
-                    "language" -> {
-                        langType = event.attributes["type"]
-                            ?: error("Missing language type")
-                        langCode = event.attributes["lang"]
-                            ?: error("Missing language code")
-                        parseEvents.readUntilEndTag(event.name).consume()
-                    }
-                    "termGrp" -> {
-                        parseEvents.readUntilEndTag(event.name).consume()
-                    }
-                    else -> error("Unexpected transaction element: $event")
-                }
-            }
-            return Language(langType, langCode)
-        }
-
         fun readTransacGrp(tag: TagStart): Transaction {
             lateinit var transactionType: String
             lateinit var author: String
@@ -88,6 +73,49 @@ class SdlTradosReader(private val parser: XmlParser) {
                 "modification" -> Transaction.Modification(author, date)
                 else -> error("Unexpected transaction type: $transactionType")
             }
+        }
+
+        fun readTermGrp(tag: TagStart): Term {
+            lateinit var termValue: String
+            val transactions = mutableListOf<Transaction>()
+            for (event in parseEvents.readUntilEndTag(tag.name).nonBlanks()) {
+                when ((event as TagStart).name) {
+                    "term" -> {
+                        termValue = readTextContent(event)
+                    }
+                    "transacGrp" -> {
+                        transactions += readTransacGrp(event)
+                    }
+                    "descripGrp" -> {
+                        // TODO
+                        parseEvents.readUntilEndTag(event.name).consume()
+                    }
+                    else -> error("Unexpected transaction element: $event")
+                }
+            }
+            return Term(termValue, emptyList())
+        }
+
+        fun readLanguageGrp(tag: TagStart): Language {
+            lateinit var langType: String
+            lateinit var langCode: String
+            val terms = mutableListOf<Term>()
+            for (event in parseEvents.readUntilEndTag(tag.name).nonBlanks()) {
+                when ((event as TagStart).name) {
+                    "language" -> {
+                        langType = event.attributes["type"]
+                            ?: error("Missing language type")
+                        langCode = event.attributes["lang"]
+                            ?: error("Missing language code")
+                        parseEvents.readUntilEndTag(event.name).consume()
+                    }
+                    "termGrp" -> {
+                        terms += readTermGrp(event)
+                    }
+                    else -> error("Unexpected transaction element: $event")
+                }
+            }
+            return Language(langType, langCode, terms)
         }
 
         fun readConceptGrp(tag: TagStart): Concept {

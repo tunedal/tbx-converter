@@ -66,7 +66,7 @@ class SdlTradosReader(private val parser: XmlParser) {
                     "date" -> {
                         date = readTextContent(event)
                     }
-                    else -> error("Unexpected transaction element: $event")
+                    else -> error("Unexpected element in transacGrp: $event")
                 }
             }
             return when (transactionType) {
@@ -86,7 +86,7 @@ class SdlTradosReader(private val parser: XmlParser) {
                             ?: error("Missing descrip type attribute")
                         value = readTextContent(event)
                     }
-                    else -> error("Unexpected in descripGrp: $event")
+                    else -> error("Unexpected element in descripGrp: $event")
                 }
             }
             return key to value
@@ -103,7 +103,7 @@ class SdlTradosReader(private val parser: XmlParser) {
                     "descripGrp" -> readDescripGrp(event).let {
                         descrip[it.first] = it.second
                     }
-                    else -> error("Unexpected transaction element: $event")
+                    else -> error("Unexpected element in termGrp: $event")
                 }
             }
             return Term(termValue, transactions, descrip)
@@ -125,7 +125,7 @@ class SdlTradosReader(private val parser: XmlParser) {
                     "termGrp" -> {
                         terms += readTermGrp(event)
                     }
-                    else -> error("Unexpected transaction element: $event")
+                    else -> error("Unexpected element in languageGrp: $event")
                 }
             }
             return Language(langType, langCode, terms)
@@ -148,7 +148,7 @@ class SdlTradosReader(private val parser: XmlParser) {
                             transactions += readTransacGrp(event)
                         }
                         else {
-                            error("Unexpected element: $event")
+                            error("Unexpected element in conceptGrp: $event")
                         }
                     }
                     else -> Unit

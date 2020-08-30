@@ -3,7 +3,16 @@ package readers
 import XmlParser
 import XmlParser.Event.*
 
-data class Concept(val id: Int, val transactions: List<Transaction>)
+data class Concept(
+    val id: Int,
+    val languages: List<Language>,
+    val transactions: List<Transaction>,
+)
+
+data class Language(
+    val type: String,
+    val lang: String,
+)
 
 sealed class Transaction {
     abstract val author: String
@@ -36,6 +45,27 @@ class SdlTradosReader(private val parser: XmlParser) {
             return buf.joinToString("")
         }
 
+        fun readLanguageGrp(tag: TagStart): Language {
+            lateinit var langType: String
+            lateinit var langCode: String
+            for (event in parseEvents.readUntilEndTag(tag.name).nonBlanks()) {
+                when ((event as TagStart).name) {
+                    "language" -> {
+                        langType = event.attributes["type"]
+                            ?: error("Missing language type")
+                        langCode = event.attributes["lang"]
+                            ?: error("Missing language code")
+                        parseEvents.readUntilEndTag(event.name).consume()
+                    }
+                    "termGrp" -> {
+                        parseEvents.readUntilEndTag(event.name).consume()
+                    }
+                    else -> error("Unexpected transaction element: $event")
+                }
+            }
+            return Language(langType, langCode)
+        }
+
         fun readTransacGrp(tag: TagStart): Transaction {
             lateinit var transactionType: String
             lateinit var author: String
@@ -62,6 +92,7 @@ class SdlTradosReader(private val parser: XmlParser) {
 
         fun readConceptGrp(tag: TagStart): Concept {
             var id: Int? = null
+            val languages = mutableListOf<Language>()
             val transactions = mutableListOf<Transaction>()
             for (event in parseEvents.readUntilEndTag(tag.name)) {
                 when (event) {
@@ -70,7 +101,7 @@ class SdlTradosReader(private val parser: XmlParser) {
                             id = readTextContent(event).toInt()
                         }
                         else if (event.name == "languageGrp") {
-                            parseEvents.readUntilEndTag(event.name).consume()
+                            languages += readLanguageGrp(event)
                         }
                         else if (event.name == "transacGrp") {
                             transactions += readTransacGrp(event)
@@ -84,6 +115,7 @@ class SdlTradosReader(private val parser: XmlParser) {
             }
             return Concept(
                 id ?: error("Missing concept ID"),
+                languages,
                 transactions,
             )
         }

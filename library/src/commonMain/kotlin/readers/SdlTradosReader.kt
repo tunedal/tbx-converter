@@ -93,7 +93,7 @@ class SdlTradosReader(private val parser: XmlParser) {
                     else -> error("Unexpected transaction element: $event")
                 }
             }
-            return Term(termValue, emptyList())
+            return Term(termValue, transactions)
         }
 
         fun readLanguageGrp(tag: TagStart): Language {

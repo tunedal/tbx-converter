@@ -11,7 +11,7 @@ class ConversionTest {
         val reader = SdlTradosReader(createParser())
         val concepts = reader.read(inputData.joinToString("\n"))
 
-        val converter = Converter()
+        val converter = Converter(JTimestampConverter())
         val convertedConcepts = converter.convert(concepts, "testprefix")
 
         val writer = TbxWriter()

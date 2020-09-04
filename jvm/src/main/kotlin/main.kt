@@ -1,3 +1,7 @@
+import converters.TimestampConverter
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.xml.parsers.SAXParserFactory
@@ -11,6 +15,14 @@ fun main() {
         events.forEach {
             println("Got parser event: $it")
         }
+    }
+}
+
+class JTimestampConverter : TimestampConverter {
+    override fun timestampFromIsoDate(date: String): Long {
+        val format = ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC)
+        val dateTime = ZonedDateTime.parse(date, format)
+        return dateTime.toEpochSecond()
     }
 }
 

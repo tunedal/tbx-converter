@@ -17,8 +17,8 @@ data class LangSet(
 
 data class Term(
     val value: String,
-    val note: String?,
-    val termNotes: List<TermNote>,
+    val note: String? = null,
+    val termNotes: List<TermNote> = emptyList(),
 )
 
 data class TermNote(
@@ -69,10 +69,27 @@ class TbxWriter {
         name: String,
         value: String,
         vararg attrs: Pair<String, Any>,
-    ) = start(name, *attrs) + value + end(name)
+    ) = start(name, *attrs) + escape(value) + end(name)
 
     private fun start(name: String, vararg attrs: Pair<String, Any>) =
-        "<$name" + attrs.joinToString { " ${it.first}=\"${it.second}\"" } + ">"
+        "<$name" + attrs.joinToString {
+            " ${it.first}=\"${escape(it.second.toString())}\""
+        } + ">"
 
     private fun end(name: String): String = "</$name>"
+
+    private fun escape(value: String): String {
+        return buildString {
+            for (c in value) {
+                when (c) {
+                    '"' -> append("&quot;")
+                    '&' -> append("&amp;")
+                    '\'' -> append("&apos;")
+                    '<' -> append("&lt;")
+                    '>' -> append("&gt;")
+                    else -> append(c)
+                }
+            }
+        }
+    }
 }

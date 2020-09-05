@@ -17,13 +17,19 @@ fun main(args: Array<String>) {
     if (!inputFile.exists())
         throw FileNotFoundException(inputFile.path)
     val outputDir = createDirectory(args[1])
+    val batchSize = args.elementAtOrNull(2)?.toInt(10)
     inputFile.useLines(detectEncoding(inputFile)) { inputLines ->
         SdlTradosConverter().use { converter ->
-            val outputLines = converter.convert(inputLines.asIterable())
-            val outputFile = outputDir.resolve(outputDir.name + ".tbx")
-            outputFile.writer().use { writer ->
-                for (line in outputLines) {
-                    writer.write(line)
+            val outputBatches = converter.convert(
+                inputLines.asIterable(),
+                batchSize = batchSize)
+            outputBatches.forEachIndexed { i, outputLines ->
+                val n = "${i + 1}".padStart(3, '0')
+                val outputFile = outputDir.resolve("${outputDir.name}-$n.tbx")
+                outputFile.writer().use { writer ->
+                    for (line in outputLines) {
+                        writer.write(line)
+                    }
                 }
             }
         }
@@ -65,10 +71,19 @@ class SdlTradosConverter : AutoCloseable {
         inputLines: Iterable<String>,
         commentTags: Set<String> = setOf("Kommentar"),
         idPrefix: String? = null,
-    ): Sequence<String> {
+        batchSize: Int? = null
+    ): Sequence<Sequence<String>> {
         val concepts = reader.read(inputLines.joinToString("\n"))
         val convertedTerms = converter.convert(concepts, commentTags, idPrefix)
-        return writer.write(convertedTerms)
+        val batches = when (batchSize) {
+            null -> sequenceOf(convertedTerms.toList())
+            else -> convertedTerms.chunked(batchSize)
+        }
+        return sequence {
+            for (batch in batches) {
+                yield(writer.write(batch.asSequence()))
+            }
+        }
     }
 
     override fun close() {

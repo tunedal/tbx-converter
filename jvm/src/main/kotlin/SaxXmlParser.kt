@@ -21,13 +21,20 @@ class SaxXmlParser(
             val xmlReader = createSaxParser().xmlReader.apply {
                 contentHandler = Handler()
             }
-            xmlReader.parse(InputSource(StringReader(xml)))
+            try {
+                xmlReader.parse(InputSource(StringReader(xml)))
+            }
+            catch (e: Exception) {
+                queue.put(Error(e))
+                return@execute
+            }
             queue.put(DocumentEnd)
         }
 
         return generateSequence {
             when (val event = queue.take()) {
                 DocumentEnd -> null
+                is Error -> error(event.exception)
                 else -> event
             }
         }

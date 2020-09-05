@@ -1,4 +1,9 @@
+import converters.Converter
 import converters.TimestampConverter
+import readers.SdlTradosReader
+import writers.TbxWriter
+import java.io.File
+import java.io.FileNotFoundException
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -6,15 +11,50 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.xml.parsers.SAXParserFactory
 
-fun main() {
-    println(hello())
-
-    val xml = "<roten><ett ichi=\"1\">Hej</ett><två>Hopp</två></roten>"
-    createParser().use { parser ->
-        val events = parser.parse(xml)
-        events.forEach {
-            println("Got parser event: $it")
+fun main(args: Array<String>) {
+    val inputFile = File(args[0])
+    if (!inputFile.exists())
+        throw FileNotFoundException(inputFile.path)
+    val outputDir = createDirectory(args[1])
+    inputFile.useLines { inputLines ->
+        SdlTradosConverter().use { converter ->
+            val outputLines = converter.convert(inputLines.asIterable())
+            val outputFile = outputDir.resolve(outputDir.name + ".tbx")
+            outputFile.writer().use { writer ->
+                for (line in outputLines) {
+                    writer.write(line)
+                }
+            }
         }
+    }
+}
+
+private fun createDirectory(path: String): File {
+    val file = File(path)
+    val success = file.mkdir()
+    if (!success)
+        error("Failed to create directory: $path")
+    return file
+}
+
+class SdlTradosConverter : AutoCloseable {
+    private val xmlParser = createParser()
+    private val reader = SdlTradosReader(xmlParser)
+    private val converter = Converter(JTimestampConverter())
+    private val writer = TbxWriter()
+
+    fun convert(
+        inputLines: Iterable<String>,
+        commentTags: Set<String> = setOf("Kommentar"),
+        idPrefix: String? = null,
+    ): Sequence<String> {
+        val concepts = reader.read(inputLines.joinToString("\n"))
+        val convertedTerms = converter.convert(concepts, commentTags, idPrefix)
+        return writer.write(convertedTerms)
+    }
+
+    override fun close() {
+        xmlParser.close()
     }
 }
 

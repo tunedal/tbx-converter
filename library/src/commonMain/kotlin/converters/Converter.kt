@@ -8,14 +8,18 @@ class Converter(private val timestampConverter: TimestampConverter) {
     fun convert(
         concepts: Sequence<Concept>,
         commentTags: Set<String>,
-        idPrefix: String,
+        idPrefix: String?,
     ): Sequence<TermEntry> {
         return concepts.map { c ->
             TermEntry(
                 listOf(
                     Descrip(
                         "conceptId",
-                        listOf(idPrefix, c.id.toString()).joinToString("-"))
+                        when(idPrefix) {
+                            is String -> "$idPrefix-${c.id}"
+                            else -> "${c.id}"
+                        }
+                    )
                 ),
                 c.languages.map { lang ->
                     LangSet(lang.lang, lang.terms.map { term ->

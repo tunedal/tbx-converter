@@ -4,6 +4,7 @@ import readers.SdlTradosReader
 import writers.TbxWriter
 import java.io.File
 import java.io.FileNotFoundException
+import java.nio.charset.Charset
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -16,7 +17,7 @@ fun main(args: Array<String>) {
     if (!inputFile.exists())
         throw FileNotFoundException(inputFile.path)
     val outputDir = createDirectory(args[1])
-    inputFile.useLines { inputLines ->
+    inputFile.useLines(detectEncoding(inputFile)) { inputLines ->
         SdlTradosConverter().use { converter ->
             val outputLines = converter.convert(inputLines.asIterable())
             val outputFile = outputDir.resolve(outputDir.name + ".tbx")
@@ -27,6 +28,23 @@ fun main(args: Array<String>) {
             }
         }
     }
+}
+
+fun detectEncoding(file: File): Charset {
+    val buf = ByteArray(32)
+    file.inputStream().buffered().use {
+        var pos = 0
+        while (pos < buf.size) {
+            val bytesRead = it.read(buf, pos, buf.size - pos)
+            if (bytesRead == -1)
+                break
+            pos += bytesRead
+        }
+    }
+    return if (buf.slice(0..1).toSet() == setOf(0xff.toByte(), 0xfe.toByte()))
+        Charsets.UTF_16
+    else
+        Charsets.UTF_8
 }
 
 private fun createDirectory(path: String): File {

@@ -45,6 +45,9 @@ class TbxWriter {
                     for (term in lang.terms) {
                         yield(start("tig"))
                         yield(valueTag("term", term.value))
+                        term.note?.let {
+                            yield(valueTag("note", it))
+                        }
                         for(note in term.termNotes) {
                             yield(valueTag(
                                 "termNote", note.value,

@@ -12,7 +12,8 @@ class ConversionTest {
         val concepts = reader.read(inputData.joinToString("\n"))
 
         val converter = Converter(JTimestampConverter())
-        val convertedConcepts = converter.convert(concepts, "testprefix")
+        val convertedConcepts = converter.convert(
+            concepts, setOf("Kommentar"), "testprefix")
 
         val writer = TbxWriter()
         val output = writer.write(convertedConcepts)

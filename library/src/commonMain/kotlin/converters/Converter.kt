@@ -7,6 +7,7 @@ import writers.*
 class Converter(private val timestampConverter: TimestampConverter) {
     fun convert(
         concepts: Sequence<Concept>,
+        commentTags: Set<String>,
         idPrefix: String,
     ): Sequence<TermEntry> {
         return concepts.map { c ->
@@ -18,13 +19,22 @@ class Converter(private val timestampConverter: TimestampConverter) {
                 ),
                 c.languages.map { lang ->
                     LangSet(lang.lang, lang.terms.map { term ->
-                        Term(term.value, null,
+                        Term(term.value,
+                            convertComment(term, commentTags),
                             term.transactions
                                 .flatMap(this::convertTransaction))
                     })
                 },
             )
         }
+    }
+
+    private fun convertComment(term: readers.Term, commentTags: Set<String>): String? {
+        val commentElements = term.descrip.asIterable()
+            .filter { it.key in commentTags }
+        if (commentElements.size > 1)
+            error("Multiple comments elements for term ${term.value}")
+        return commentElements.singleOrNull()?.value
     }
 
     private fun convertTransaction(it: Transaction): List<TermNote> {

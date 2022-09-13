@@ -13,7 +13,7 @@
   </parent>
 
   <properties>
-    <main.class>SwingMainKt</main.class>
+    <main.class>SwtMainKt</main.class>
     <swt.version>3.120.0</swt.version>
   </properties>
 

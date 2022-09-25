@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import os
+from pprint import pprint
+
 import sys, subprocess, platform
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -14,6 +17,11 @@ PROJDIR = Path(__file__).parent.resolve()
 def main(args):
     print("WTF")
     run("choco", "list", "--localonly", "maven", "--all")
+
+    pprint(os.environ)
+
+    pprint(list(Path("C:/tools").iterdir()))
+    pprint(list(Path("C:/programdata/chocolatey").iterdir()))
 
     mvn("clean", "install")
 

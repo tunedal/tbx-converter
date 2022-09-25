@@ -70,6 +70,8 @@ def package(directory):
         "--win-menu",
         "--win-menu-group", "",
         "--add-modules", ",".join(["java.base", "java.xml"]))
+    print("Done!")
+    print(list(Path(".").iterdir()))
 
 
 def mvn(*cmd, cwd=PROJDIR):

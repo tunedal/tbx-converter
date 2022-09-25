@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import os
-from pprint import pprint
-
 import sys, subprocess, platform
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -15,14 +12,6 @@ PROJDIR = Path(__file__).parent.resolve()
 
 
 def main(args):
-    print("WTF")
-    run("choco", "list", "--localonly", "maven", "--all")
-
-    pprint(os.environ)
-
-    pprint(list(Path("C:/tools").iterdir()))
-    pprint(list(Path("C:/programdata/chocolatey").iterdir()))
-
     mvn("clean", "install")
 
     mvn("dependency:copy-dependencies", "-DincludeScope=runtime",
@@ -37,6 +26,8 @@ def main(args):
     print()
     print("Main JAR:", main_jar.name)
     copy2(main_jar, depdir / "tbx-converter.jar")
+
+    print("Platform:", repr(platform.system())
 
     if platform.system() == "Windows":
         package(depdir)
@@ -66,6 +57,7 @@ def extract_native_libs(jarpath, target_dir):
 
 
 def package(directory):
+    print("Creating MSI package...")
     run("jpackage", "-i", str(directory.resolve()),
         "--type", "msi",
         "--name", "TBX Converter",
@@ -82,7 +74,8 @@ def package(directory):
 
 def mvn(*cmd, cwd=PROJDIR):
     cmd = ["mvn", "--batch-mode", "--update-snapshots"] + list(cmd)
-    cmd = ["cmd", "/c"] + cmd
+    if platform.system() == "Windows":
+        cmd = ["cmd", "/c"] + cmd
     run(*cmd, cwd=cwd)
 
 

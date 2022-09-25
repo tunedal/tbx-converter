@@ -27,8 +27,6 @@ def main(args):
     print("Main JAR:", main_jar.name)
     copy2(main_jar, depdir / "tbx-converter.jar")
 
-    print("Platform:", repr(platform.system()))
-
     if platform.system() == "Windows":
         package(depdir)
 
@@ -48,6 +46,11 @@ def extract_native_libs(jarpath, target_dir):
         for p in lib_files:
             print(f"  {p.name}")
             move(p, target_dir)
+
+        signature_files = [p for p in (tempdir / "META-INF").iterdir()
+                           if p.suffix.lower() in [".rsa", ".sf"]]
+        for p in signature_files:
+            p.unlink()
 
         run("jar", "cf", f"{jarpath.stem}-pure{jarpath.suffix}",
             "-C", str(tempdir), ".",

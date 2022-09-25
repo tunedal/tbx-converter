@@ -74,6 +74,7 @@ def package(directory):
 
 def mvn(*cmd, cwd=PROJDIR):
     cmd = ["mvn", "--batch-mode", "--update-snapshots"] + list(cmd)
+    cmd = ["cmd", "/c"] + cmd
     run(*cmd, cwd=cwd)
 
 

@@ -31,21 +31,6 @@ jobs:
           name: msi-package
           path: ${{ steps.build.outputs.MSI_PACKAGE_FILENAME }}
 
-      # - name: Bundle release files in zip
-      #   id: bundle
-      #   shell: bash
-      #   run: |
-      #     INCLUDE_FILE_TYPES='class|md|txt|dix'
-      #     REV="$(git rev-parse --short "$GITHUB_SHA")"
-      #     BUILD_ID="$(date '+%Y%m%dT%H%M%S')-$REV"
-      #     BUNDLE_FILENAME="AddToDix-${BUILD_ID}.zip"
-      #     find . -name '.??*' -prune -or \
-      #       -type f -regextype egrep \
-      #       -regex '.*\.('"${INCLUDE_FILE_TYPES}"')$' -print \
-      #       | zip -@ "${BUNDLE_FILENAME}"
-      #     echo '::set-output name=BUILD_ID::'"${BUILD_ID}"
-      #     echo '::set-output name=BUNDLE_FILENAME::'"${BUNDLE_FILENAME}"
-
       # - name: Create GitHub release
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

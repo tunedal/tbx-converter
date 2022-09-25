@@ -73,7 +73,7 @@ def package(directory):
         "--win-menu-group", "",
         "--add-modules", ",".join(["java.base", "java.xml"]))
 
-    filename, = list(Path(".").iterdir())
+    filename, = list(Path(".").glob("*.msi"))
     set_output("MSI_PACKAGE_FILENAME", filename)
 
 

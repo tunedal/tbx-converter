@@ -1,0 +1,51 @@
+name: Build release
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Build and package
+        run: |
+          py -3 build.py
+
+      # - name: Bundle release files in zip
+      #   id: bundle
+      #   shell: bash
+      #   run: |
+      #     INCLUDE_FILE_TYPES='class|md|txt|dix'
+      #     REV="$(git rev-parse --short "$GITHUB_SHA")"
+      #     BUILD_ID="$(date '+%Y%m%dT%H%M%S')-$REV"
+      #     BUNDLE_FILENAME="AddToDix-${BUILD_ID}.zip"
+      #     find . -name '.??*' -prune -or \
+      #       -type f -regextype egrep \
+      #       -regex '.*\.('"${INCLUDE_FILE_TYPES}"')$' -print \
+      #       | zip -@ "${BUNDLE_FILENAME}"
+      #     echo '::set-output name=BUILD_ID::'"${BUILD_ID}"
+      #     echo '::set-output name=BUNDLE_FILENAME::'"${BUNDLE_FILENAME}"
+
+      # - name: Create GitHub release
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     BUILD_ID: ${{ steps.bundle.outputs.BUILD_ID }}
+      #   run: |
+      #     hub release create \
+      #       -m "Build ${BUILD_ID}" \
+      #       -t "$GITHUB_SHA" \
+      #       -a "${{ steps.bundle.outputs.BUNDLE_FILENAME }}" \
+      #       "release-${BUILD_ID}"

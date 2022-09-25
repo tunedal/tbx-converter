@@ -13,7 +13,7 @@ PROJDIR = Path(__file__).parent.resolve()
 
 def main(args):
     print("WTF")
-    run("choco", "list", "--localonly", "maven", "--all", "--limitoutput")
+    run("choco", "list", "--localonly", "maven", "--all")
 
     mvn("clean", "install")
 
@@ -73,7 +73,8 @@ def package(directory):
 
 
 def mvn(*cmd, cwd=PROJDIR):
-    run(["mvn", "--batch-mode", "--update-snapshots"] + cmd, cwd=cwd)
+    cmd = ["mvn", "--batch-mode", "--update-snapshots"] + list(cmd)
+    run(*cmd, cwd=cwd)
 
 
 def run(*cmd, cwd=PROJDIR):

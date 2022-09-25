@@ -12,9 +12,12 @@ PROJDIR = Path(__file__).parent.resolve()
 
 
 def main(args):
-    run("mvn", "clean", "install")
+    print("WTF")
+    run("choco", "list", "--localonly", "maven", "--all", "--limitoutput")
 
-    run("mvn", "dependency:copy-dependencies", "-DincludeScope=runtime",
+    mvn("clean", "install")
+
+    mvn("dependency:copy-dependencies", "-DincludeScope=runtime",
         cwd=PROJDIR / "gui")
 
     depdir = PROJDIR / "gui/target/dependency"
@@ -67,6 +70,10 @@ def package(directory):
         "--win-menu",
         "--win-menu-group", "",
         "--add-modules", ",".join(["java.base", "java.xml"]))
+
+
+def mvn(*cmd, cwd=PROJDIR):
+    run(["mvn", "--batch-mode", "--update-snapshots"] + cmd, cwd=cwd)
 
 
 def run(*cmd, cwd=PROJDIR):

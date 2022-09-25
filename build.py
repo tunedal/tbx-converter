@@ -57,7 +57,9 @@ def extract_native_libs(jarpath, target_dir):
 
 
 def package(directory):
+    print()
     print("Creating MSI package...")
+
     run("jpackage", "-i", str(directory.resolve()),
         "--type", "msi",
         "--name", "TBX Converter",
@@ -70,8 +72,14 @@ def package(directory):
         "--win-menu",
         "--win-menu-group", "",
         "--add-modules", ",".join(["java.base", "java.xml"]))
-    print("Done!")
-    print(list(Path(".").iterdir()))
+
+    filename, = list(Path(".").iterdir())
+    set_output("MSI_PACKAGE_FILENAME", filename)
+
+
+def set_output(key, value):
+    # GitHub Actions in-band signaling.
+    print("::set-output", f"name={key}::{value}")
 
 
 def mvn(*cmd, cwd=PROJDIR):

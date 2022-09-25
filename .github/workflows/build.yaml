@@ -21,8 +21,15 @@ jobs:
           cache: 'maven'
 
       - name: Build and package
+        id: build
         run: |
           py -3 build.py
+
+      - name: Store MSI artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: msi-package
+          path: ${{ steps.build.outputs.MSI_PACKAGE_FILENAME }}
 
       # - name: Bundle release files in zip
       #   id: bundle

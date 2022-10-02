@@ -38,7 +38,12 @@ def main(args):
     if platform.system() == "Windows":
         if args:
             (tag,) = args
-            version = re.match(r"^v(\d+\.){2}\d+$", tag).group(0)
+        else:
+            tag = ""
+
+        m = re.match(r"^v(\d+\.\d+\.\d+)$", tag)
+        if m:
+            version = m.group(1)
         else:
             version = "0.0.0"
 

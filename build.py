@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, subprocess, platform
+import sys, re, subprocess, platform
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from shutil import move, copy2
@@ -27,8 +27,10 @@ def main(args):
     print("Main JAR:", main_jar.name)
     copy2(main_jar, depdir / "tbx-converter.jar")
 
-    if platform.system() == "Windows":
-        package(depdir)
+    if platform.system() == "Windows" and args:
+        (tag,) = args
+        version = re.match(r"^v(\d+\.){2,3}\d+$", tag).group(0)
+        package(depdir, version)
 
 
 def extract_native_libs(jarpath, target_dir):
@@ -59,7 +61,7 @@ def extract_native_libs(jarpath, target_dir):
         jarpath.unlink()
 
 
-def package(directory):
+def package(directory, version):
     print()
     print("Creating MSI package...")
 
@@ -67,7 +69,7 @@ def package(directory):
         "--type", "msi",
         "--name", "TBX Converter",
         "--vendor", "Henrik Tunedal",
-        "--app-version", "1.0.0",
+        "--app-version", version,
         "--main-class", "SwtMainKt",
         "--main-jar", "tbx-converter.jar",
         "--win-upgrade-uuid", "56cee060-8736-42e4-8c76-5c23fb86e2c9",
@@ -78,6 +80,7 @@ def package(directory):
 
     filename, = list(Path(".").glob("*.msi"))
     set_output("MSI_PACKAGE_FILENAME", filename)
+    set_output("VERSION", version)
 
 
 def set_output(key, value):

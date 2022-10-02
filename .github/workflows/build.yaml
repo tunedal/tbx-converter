@@ -1,7 +1,9 @@
 name: Build release
 
-on: push
-    #branches: [master]
+on:
+  push:
+    tags:
+      - 'v[0-9]+.*'
 
 jobs:
   build:
@@ -17,13 +19,13 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'zulu'
+          distribution: 'temurin'
           cache: 'maven'
 
       - name: Build and package
         id: build
         run: |
-          py -3 build.py
+          py -3 build.py "$GITHUB_REF_NAME"
 
       - name: Store MSI artifact
         uses: actions/upload-artifact@v3
@@ -31,13 +33,14 @@ jobs:
           name: msi-package
           path: ${{ steps.build.outputs.MSI_PACKAGE_FILENAME }}
 
-      # - name: Create GitHub release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     BUILD_ID: ${{ steps.bundle.outputs.BUILD_ID }}
-      #   run: |
-      #     hub release create \
-      #       -m "Build ${BUILD_ID}" \
-      #       -t "$GITHUB_SHA" \
-      #       -a "${{ steps.bundle.outputs.BUNDLE_FILENAME }}" \
-      #       "release-${BUILD_ID}"
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MSI_FILENAME: ${{ steps.bundle.outputs.MSI_PACKAGE_FILENAME }}
+        run: |
+          hub release create \
+            --draft
+            --message "Version $VERSION" \
+            -t "$GITHUB_SHA" \
+            -a "$MSI_FILENAME" \
+            "release-$BUILD_ID"

@@ -89,6 +89,8 @@ def package(directory, version):
         "--add-modules", ",".join(["java.base", "java.xml"]))
 
     filename, = list(Path(".").glob("*.msi"))
+    filename.rename(filename.name.replace(" ", "-"))
+
     set_output("MSI_PACKAGE_FILENAME", filename)
     set_output("VERSION", version)
 

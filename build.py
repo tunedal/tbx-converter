@@ -14,9 +14,9 @@ PROJDIR = Path(__file__).parent.resolve()
 def main(args):
     # XXX
     print("args:", repr(args))
-    set_output("MSI_PACKAGE_FILENAME", __file__)
-    set_output("VERSION", "1.2.3")
-    return
+    #set_output("MSI_PACKAGE_FILENAME", __file__)
+    #set_output("VERSION", "1.2.3")
+    #return
 
 
 
@@ -38,9 +38,9 @@ def main(args):
     if platform.system() == "Windows":
         if args:
             (tag,) = args
-            version = re.match(r"^v(\d+\.){2,3}\d+$", tag).group(0)
+            version = re.match(r"^v(\d+\.){2}\d+$", tag).group(0)
         else:
-            version = "0.0.0.0"
+            version = "0.0.0"
 
         package = dummy_package  # XXX
 

@@ -45,3 +45,4 @@ jobs:
           -t "${env:GITHUB_SHA}"
           -a "${env:MSI_FILENAME}"
           "${env:GITHUB_REF_NAME}"
+        if: env.VERSION != '0.0.0'

@@ -1,0 +1,48 @@
+name: Build release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build and package
+        id: build
+        run: >
+          py -3 build.py "${env:GITHUB_REF_NAME}"
+
+      - name: Store MSI artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: msi-package
+          path: ${{ steps.build.outputs.MSI_PACKAGE_FILENAME }}
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MSI_FILENAME: ${{ steps.build.outputs.MSI_PACKAGE_FILENAME }}
+          VERSION: ${{ steps.build.outputs.VERSION }}
+        run: >
+          hub release create
+          --draft
+          --message "Version ${env:VERSION}"
+          -t "${env:GITHUB_SHA}"
+          -a "${env:MSI_FILENAME}"
+          "${env:GITHUB_REF_NAME}"
+        if: env.VERSION != '0.0.0'

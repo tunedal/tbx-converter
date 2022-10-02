@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, subprocess, platform
+import sys, re, subprocess, platform
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from shutil import move, copy2
@@ -12,9 +12,9 @@ PROJDIR = Path(__file__).parent.resolve()
 
 
 def main(args):
-    run("mvn", "clean", "install")
+    mvn("clean", "install")
 
-    run("mvn", "dependency:copy-dependencies", "-DincludeScope=runtime",
+    mvn("dependency:copy-dependencies", "-DincludeScope=runtime",
         cwd=PROJDIR / "gui")
 
     depdir = PROJDIR / "gui/target/dependency"
@@ -28,7 +28,19 @@ def main(args):
     copy2(main_jar, depdir / "tbx-converter.jar")
 
     if platform.system() == "Windows":
-        package(depdir)
+        if args:
+            (tag,) = args
+        else:
+            tag = ""
+
+        m = re.match(r"^v(\d+\.\d+\.\d+)$", tag)
+        if m:
+            version = m.group(1)
+        else:
+            version = "0.0.0"
+
+        print("Packaging version:", version)
+        package(depdir, version)
 
 
 def extract_native_libs(jarpath, target_dir):
@@ -47,6 +59,11 @@ def extract_native_libs(jarpath, target_dir):
             print(f"  {p.name}")
             move(p, target_dir)
 
+        signature_files = [p for p in (tempdir / "META-INF").iterdir()
+                           if p.suffix.lower() in [".rsa", ".sf"]]
+        for p in signature_files:
+            p.unlink()
+
         run("jar", "cf", f"{jarpath.stem}-pure{jarpath.suffix}",
             "-C", str(tempdir), ".",
             cwd=target_dir)
@@ -54,12 +71,15 @@ def extract_native_libs(jarpath, target_dir):
         jarpath.unlink()
 
 
-def package(directory):
+def package(directory, version):
+    print()
+    print("Creating MSI package...")
+
     run("jpackage", "-i", str(directory.resolve()),
         "--type", "msi",
         "--name", "TBX Converter",
         "--vendor", "Henrik Tunedal",
-        "--app-version", "1.0.0",
+        "--app-version", version,
         "--main-class", "SwtMainKt",
         "--main-jar", "tbx-converter.jar",
         "--win-upgrade-uuid", "56cee060-8736-42e4-8c76-5c23fb86e2c9",
@@ -67,6 +87,24 @@ def package(directory):
         "--win-menu",
         "--win-menu-group", "",
         "--add-modules", ",".join(["java.base", "java.xml"]))
+
+    filename, = list(Path(".").glob("*.msi"))
+    filename = filename.rename(filename.name.replace(" ", "-"))
+
+    set_output("MSI_PACKAGE_FILENAME", filename)
+    set_output("VERSION", version)
+
+
+def set_output(key, value):
+    # GitHub Actions in-band signaling.
+    print("::set-output", f"name={key}::{value}")
+
+
+def mvn(*cmd, cwd=PROJDIR):
+    cmd = ["mvn", "--batch-mode", "--update-snapshots"] + list(cmd)
+    if platform.system() == "Windows":
+        cmd = ["cmd", "/c"] + cmd
+    run(*cmd, cwd=cwd)
 
 
 def run(*cmd, cwd=PROJDIR):

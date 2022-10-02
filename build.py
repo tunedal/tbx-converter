@@ -12,6 +12,14 @@ PROJDIR = Path(__file__).parent.resolve()
 
 
 def main(args):
+    # XXX
+    print("args:", repr(args))
+    set_output("MSI_PACKAGE_FILENAME", __file__)
+    set_output("VERSION", "1.2.3")
+    return
+
+
+
     mvn("clean", "install")
 
     mvn("dependency:copy-dependencies", "-DincludeScope=runtime",

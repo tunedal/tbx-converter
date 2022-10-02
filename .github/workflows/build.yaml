@@ -24,7 +24,7 @@ jobs:
 
       - name: Build and package
         id: build
-        run: >-
+        run: >
           py -3 build.py "${env:GITHUB_REF_NAME}"
 
       - name: Store MSI artifact
@@ -36,11 +36,12 @@ jobs:
       - name: Create GitHub release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MSI_FILENAME: ${{ steps.bundle.outputs.MSI_PACKAGE_FILENAME }}
-        run: >-
+          MSI_FILENAME: ${{ steps.build.outputs.MSI_PACKAGE_FILENAME }}
+          VERSION: ${{ steps.build.outputs.VERSION }}
+        run: >
           hub release create
-            --draft
-            --message "Version ${env:VERSION}"
-            -t "${env:GITHUB_SHA}"
-            -a "${env:MSI_FILENAME}"
-            "${env:GITHUB_REF_NAME}"
+          --draft
+          --message "Version ${env:VERSION}"
+          -t "${env:GITHUB_SHA}"
+          -a "${env:MSI_FILENAME}"
+          "${env:GITHUB_REF_NAME}"

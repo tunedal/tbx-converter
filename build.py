@@ -12,14 +12,6 @@ PROJDIR = Path(__file__).parent.resolve()
 
 
 def main(args):
-    # XXX
-    print("args:", repr(args))
-    #set_output("MSI_PACKAGE_FILENAME", __file__)
-    #set_output("VERSION", "1.2.3")
-    #return
-
-
-
     mvn("clean", "install")
 
     mvn("dependency:copy-dependencies", "-DincludeScope=runtime",
@@ -47,18 +39,8 @@ def main(args):
         else:
             version = "0.0.0"
 
-        package = dummy_package  # XXX
-
         print("Packaging version:", version)
         package(depdir, version)
-
-
-def dummy_package(depdir, version):
-    print("Dummy packaging!")
-    print("Depdir:", repr(depdir))
-    print("Version:", repr(version))
-    set_output("MSI_PACKAGE_FILENAME", str(depdir / "tbx-converter.jar"))
-    set_output("VERSION", version)
 
 
 def extract_native_libs(jarpath, target_dir):

@@ -3,7 +3,7 @@ name: Build release
 on:
   push:
     tags:
-      - 'v[0-9]+.*'
+      - *
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
       - name: Build and package
         id: build
         run: |
-          py -3 build.py "$GITHUB_REF_NAME"
+          py -3 build.py "${GITHUB_REF_NAME}"
 
       - name: Store MSI artifact
         uses: actions/upload-artifact@v3
@@ -40,7 +40,7 @@ jobs:
         run: |
           hub release create \
             --draft
-            --message "Version $VERSION" \
-            -t "$GITHUB_SHA" \
-            -a "$MSI_FILENAME" \
-            "release-$BUILD_ID"
+            --message "Version ${VERSION}" \
+            -t "${GITHUB_SHA}" \
+            -a "${MSI_FILENAME}" \
+            "${GITHUB_REF_NAME}"

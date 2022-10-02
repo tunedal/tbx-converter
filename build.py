@@ -27,9 +27,12 @@ def main(args):
     print("Main JAR:", main_jar.name)
     copy2(main_jar, depdir / "tbx-converter.jar")
 
-    if platform.system() == "Windows" and args:
-        (tag,) = args
-        version = re.match(r"^v(\d+\.){2,3}\d+$", tag).group(0)
+    if platform.system() == "Windows":
+        if args:
+            (tag,) = args
+            version = re.match(r"^v(\d+\.){2,3}\d+$", tag).group(0)
+        else:
+            version = "0.0.0.0"
         package(depdir, version)
 
 

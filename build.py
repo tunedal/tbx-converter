@@ -33,7 +33,19 @@ def main(args):
             version = re.match(r"^v(\d+\.){2,3}\d+$", tag).group(0)
         else:
             version = "0.0.0.0"
+
+        package = dummy_package  # XXX
+
+        print("Packaging version:", version)
         package(depdir, version)
+
+
+def dummy_package(depdir, version):
+    print("Dummy packaging!")
+    print("Depdir:", repr(depdir))
+    print("Version:", repr(version))
+    set_output("MSI_PACKAGE_FILENAME", str(depdir / "tbx-converter.jar"))
+    set_output("VERSION", version)
 
 
 def extract_native_libs(jarpath, target_dir):

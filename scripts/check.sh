@@ -2,7 +2,7 @@
 
 set -eu
 
-BASEDIR="$(dirname "$0")"
+BASEDIR="$(dirname "$0")/.."
 
 check() {
     flake8 "$BASEDIR"/{tbxconverter,tests}

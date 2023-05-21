@@ -1,6 +1,7 @@
 import sys
 from datetime import datetime, timezone
 from typing import Iterable
+from pathlib import Path
 
 from .trados_reader import Concept, TransactionType
 from .trados_reader import read_trados_file
@@ -9,6 +10,13 @@ from .tbx_writer import write_tbx_file
 
 ORIGINATION = TransactionType.ORIGINATION
 MODIFICATION = TransactionType.MODIFICATION
+
+
+def convert_file(input_path: Path, output_path: Path) -> int:
+    with open(input_path, "rb") as fi, open(output_path, "wb") as fo:
+        trados_data = read_trados_file(fi)
+        tbx_data = trados_to_tbx(trados_data)
+        return write_tbx_file(fo, tbx_data)
 
 
 def trados_to_tbx(

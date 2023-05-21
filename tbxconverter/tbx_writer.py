@@ -35,8 +35,9 @@ class TermEntry:
     languages: list[LangSet]
 
 
-def write_tbx_file(stream, terms: Iterable[TermEntry], indent="  ") -> None:
+def write_tbx_file(stream, terms: Iterable[TermEntry], indent="  ") -> int:
     indent_bytes = indent.encode("utf-8")
+    count = 0
 
     stream.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
     stream.write(b'<martif type="TBX">\n')
@@ -71,8 +72,12 @@ def write_tbx_file(stream, terms: Iterable[TermEntry], indent="  ") -> None:
         stream.write(ET.tostring(root))
         stream.write(b'\n')
 
+        count += 1
+
     stream.write(indent_bytes * 2)
     stream.write(b'</body>\n')
     stream.write(indent_bytes)
     stream.write(b'</text>\n')
     stream.write(b'</martif>\n')
+
+    return count

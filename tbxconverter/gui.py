@@ -2,7 +2,7 @@
 
 import sys
 
-from winter.constants import VK, WM, MB, SS, OFN, COLOR  # type: ignore
+from winter.constants import WM, MB, SS, OFN, COLOR   # type: ignore
 from winter.wrappers import App, pump_messages        # type: ignore
 from winter.layout import GridLayout                  # type: ignore
 from winter.widgets import Toplevel, Button, Label    # type: ignore
@@ -45,9 +45,6 @@ def build_ui(app, model: ConverterWindowModel):
         if filename:
             model.convert(filename)
 
-    def on_escape_pressed(event):
-        toplevel.window.destroy()
-
     def on_model_state_changed(state):
         open_button.enable(state.load_enabled)
         export_button.enable(state.export_enabled)
@@ -64,11 +61,7 @@ def build_ui(app, model: ConverterWindowModel):
         WM.CTLCOLORSTATIC: lambda e: COLOR.WINDOW + 1,
     }
 
-    key_handlers = {
-        VK.ESCAPE: on_escape_pressed,
-    }
-
-    toplevel = Toplevel(app, "TBX Converter", handlers, key_handlers)
+    toplevel = Toplevel(app, "TBX Converter", handlers)
 
     open_button = Button(toplevel, caption="Öppna...",
                          command=on_open_button_clicked)

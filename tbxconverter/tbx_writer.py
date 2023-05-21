@@ -4,32 +4,32 @@ from dataclasses import dataclass
 from typing import Optional, Iterable
 
 
-@dataclass
+@dataclass(frozen=True)
 class Descrip:
     type: str
     value: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class TermNote:
     type: str
     value: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Term:
     value: str
     note: Optional[str]
     term_notes: list[TermNote]
 
 
-@dataclass
+@dataclass(frozen=True)
 class LangSet:
     iso_code: str
     terms: list[Term]
 
 
-@dataclass
+@dataclass(frozen=True)
 class TermEntry:
     descrips: list[Descrip]
     languages: list[LangSet]

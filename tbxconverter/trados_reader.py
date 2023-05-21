@@ -10,28 +10,28 @@ class TransactionType(Enum):
     MODIFICATION = "modification"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Transaction:
     type: TransactionType
     source: str
     date: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Term:
     text: str
     transactions: list[Transaction]
     descriptions: dict[str, str] = field(default_factory=dict)
 
 
-@dataclass
+@dataclass(frozen=True)
 class Language:
     name: str
     code: str
     terms: list[Term]
 
 
-@dataclass
+@dataclass(frozen=True)
 class Concept:
     id: int
     languages: list[Language]

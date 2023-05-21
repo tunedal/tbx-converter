@@ -5,7 +5,7 @@ from pathlib import Path
 from .converter import convert_file
 
 
-@dataclass
+@dataclass(frozen=True)
 class State:
     load_enabled: bool
     export_enabled: bool

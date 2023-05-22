@@ -42,7 +42,7 @@ def read_trados_file(stream) -> Iterable[Concept]:
     def read_transactions(element):
         transactions = []
 
-        for trans_grp in element.findall("transacGrp"):
+        for trans_grp in element.iterfind("transacGrp"):
             trans = trans_grp.find("transac")
             trans_date = trans_grp.find("date")
 
@@ -58,24 +58,35 @@ def read_trados_file(stream) -> Iterable[Concept]:
 
         return transactions
 
-    for event, concept_grp in ET.iterparse(stream):
+    doc_iterator = ET.iterparse(stream, events=("start", "end"))
+
+    root = next(doc_iterator)[1]
+    if root.tag != "mtf":
+        raise ValueError(f"Unexpected root element {root.tag!r}")
+
+    for event, iter_element in doc_iterator:
+        if event != "end" or iter_element.tag != "conceptGrp":
+            continue
+
+        concept_grp = iter_element
+
         concept = concept_grp.find("concept")
         if concept is None or not concept.text:
             continue
 
         languages = []
-        for lang_grp in concept_grp.findall("./languageGrp"):
+        for lang_grp in concept_grp.iterfind("languageGrp"):
             lang = lang_grp.find("language")
             if lang is None:
                 continue
 
             terms = []
-            for term_grp in lang_grp.findall("termGrp"):
+            for term_grp in lang_grp.iterfind("termGrp"):
                 term = term_grp.find("term")
                 if term is None or not term.text:
                     continue
 
-                descriptions = term_grp.findall("descripGrp/descrip")
+                descriptions = term_grp.iterfind("descripGrp/descrip")
                 terms.append(Term(
                     term.text,
                     read_transactions(term_grp),
@@ -90,6 +101,8 @@ def read_trados_file(stream) -> Iterable[Concept]:
 
         yield Concept(int(concept.text), languages,
                       read_transactions(concept_grp))
+
+        root.clear()
 
 
 def main():

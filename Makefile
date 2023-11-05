@@ -17,7 +17,7 @@ build: check build/winter-clone
 	  .//tbxconverter
 
 run: build
-	WINEDEBUG=-all wine build/runtime/pythonw.exe build/app.pyzw \
+	WINEDEBUG=-all wine build/runtime/python.exe build/app.pyzw \
 		tests/data/sdl-trados-example.xml
 
 check:

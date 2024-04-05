@@ -12,8 +12,7 @@ MODIFICATION = TransactionType.MODIFICATION
 class TradosReaderTest(TestCase):
     @classmethod
     def setUpClass(self):
-        filename = "data/sdl-trados-example.xml"
-        with files(__package__).joinpath(filename).open() as f:
+        with open_resource_file("sdl-trados-example.xml") as f:
             self.trados_data = list(read_trados_file(f))
 
     def test_reads_concept_list(self):
@@ -285,3 +284,19 @@ class TradosReaderTest(TestCase):
         ]
 
         self.assertEqual(expected, self.trados_data)
+
+
+class FileEncodingTest(TestCase):
+    def test_supports_utf16(self):
+        # Test with an UTF-16LE encoded input file without line breaks,
+        # which is how the real files are encoded.
+        with open_resource_file("sdl-trados-utf16.xml") as f:
+            trados_data = list(read_trados_file(f))
+
+        self.assertEqual(trados_data[0].languages[0].terms[0].text,
+                         "term 100 in English")
+
+
+def open_resource_file(filename):
+    path = "data/" + filename
+    return files(__package__).joinpath(path).open("rb")

@@ -64,7 +64,7 @@ def trados_to_tbx(
 
 
 def main():
-    with open(sys.argv[1]) as f:
+    with open(sys.argv[1], "rb") as f:
         trados_data = read_trados_file(f)
         tbx_data = trados_to_tbx(trados_data)
         write_tbx_file(sys.stdout.buffer, tbx_data)

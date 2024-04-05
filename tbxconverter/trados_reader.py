@@ -106,7 +106,7 @@ def read_trados_file(stream) -> Iterable[Concept]:
 
 
 def main():
-    with open(sys.argv[1]) as f:
+    with open(sys.argv[1], "rb") as f:
         for c in read_trados_file(f):
             print(c)
 

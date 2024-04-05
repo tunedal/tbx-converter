@@ -6,7 +6,7 @@ BASEDIR="$(dirname "$0")/.."
 
 check() {
     flake8 "$BASEDIR"/{tbxconverter,tests}
-    python3 -m unittest discover -s "$BASEDIR"
+    python3 -X dev -m unittest discover -s "$BASEDIR"
     mypy "$BASEDIR"/{tbxconverter,tests}
 }
 

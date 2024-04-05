@@ -1,5 +1,5 @@
 WINTER_PATH = ../winter
-WINTER_VERSION = 728f7eea0b71c316cd389a258073529a062520f6
+WINTER_VERSION = 574608938f9475933bcb739a320896bc459e92fb
 
 build: check build/winter-clone
 	git -c advice.detachedHead=false \
